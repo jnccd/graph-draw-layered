@@ -37,7 +37,7 @@ public class CrossingMinimizationLayerPhase implements LayerPhase {
                 s = s.stream().distinct().collect(Collectors.toList());
                 
                 Help.getProp(n).barycenterVal = s.stream().map(x -> layers.get(fl - 1).indexOf(x)).
-                        reduce(0, (a, b) -> a + b) / s.size();
+                        reduce(0, (a, b) -> a + b) / (double)s.size();
             }
         }
         

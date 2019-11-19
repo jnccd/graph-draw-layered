@@ -15,6 +15,9 @@ public class NodePlacementLayerPhase implements LayerPhase {
     @Override
     public void apply(ElkNode layoutGraph, IElkProgressMonitor monitor) throws Exception {
         double nodeNodeSpacing = layoutGraph.getProperty(LayeredLayoutingOptions.SPACING_NODE_NODE);
+        double edgeNodeSpacing = layoutGraph.getProperty(LayeredLayoutingOptions.SPACING_EDGE_NODE);
+        double layerSpacing = layoutGraph.getProperty(LayeredLayoutingOptions.LAYER_SPACING);
+        
         var nodes = layoutGraph.getChildren();
         var layers = Help.getGraphProp(layoutGraph).layers;
         
@@ -30,7 +33,7 @@ public class NodePlacementLayerPhase implements LayerPhase {
                 
                 curY += n.getHeight() + nodeNodeSpacing;
             }
-            curX += stackWidth + nodeNodeSpacing;
+            curX += stackWidth + nodeNodeSpacing + layerSpacing;
         }
     }
 

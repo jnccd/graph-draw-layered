@@ -23,6 +23,20 @@ public class LayeredLayoutingMetadataProvider implements ILayoutMetaDataProvider
             null,
             null);
   
+  /**
+   * Default value for {@link #LAYER_SPACING}.
+   */
+  private static final int LAYER_SPACING_DEFAULT = 25;
+  
+  /**
+   * The spacing between layers.
+   */
+  public static final IProperty<Integer> LAYER_SPACING = new Property<Integer>(
+            "layeredLayouting.layerSpacing",
+            LAYER_SPACING_DEFAULT,
+            null,
+            null);
+  
   public void apply(final org.eclipse.elk.core.data.ILayoutMetaDataProvider.Registry registry) {
     registry.register(new LayoutOptionData.Builder()
         .id("layeredLayouting.reverseInput")
@@ -32,6 +46,18 @@ public class LayeredLayoutingMetadataProvider implements ILayoutMetaDataProvider
         .defaultValue(REVERSE_INPUT_DEFAULT)
         .type(LayoutOptionData.Type.BOOLEAN)
         .optionClass(Boolean.class)
+        .targets(EnumSet.of(LayoutOptionData.Target.PARENTS))
+        .visibility(LayoutOptionData.Visibility.VISIBLE)
+        .create()
+    );
+    registry.register(new LayoutOptionData.Builder()
+        .id("layeredLayouting.layerSpacing")
+        .group("")
+        .name("Layer Spacing")
+        .description("The spacing between layers.")
+        .defaultValue(LAYER_SPACING_DEFAULT)
+        .type(LayoutOptionData.Type.INT)
+        .optionClass(Integer.class)
         .targets(EnumSet.of(LayoutOptionData.Target.PARENTS))
         .visibility(LayoutOptionData.Visibility.VISIBLE)
         .create()

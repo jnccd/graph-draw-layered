@@ -20,7 +20,7 @@ public class EdgeRoutingProvider {
                         source.getX() + source.getWidth() / 2,
                         source.getY() + source.getHeight() / 2);
                 section.setEndLocation(
-                        target.getX() + target.getWidth() / 2,
+                        target.getX() + source.getWidth() / 2,
                         target.getY() + target.getHeight() / 2);
                                 
                 edgeRoutingMonitor.logGraph(layoutGraph, source.getIdentifier() + " -> " + target.getIdentifier());

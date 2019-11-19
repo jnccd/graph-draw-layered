@@ -24,6 +24,11 @@ public class LayeredLayoutingOptions implements ILayoutMetaDataProvider {
   public static final IProperty<Boolean> REVERSE_INPUT = LayeredLayoutingMetadataProvider.REVERSE_INPUT;
   
   /**
+   * The spacing between layers.
+   */
+  public static final IProperty<Integer> LAYER_SPACING = LayeredLayoutingMetadataProvider.LAYER_SPACING;
+  
+  /**
    * Default value for {@link #PADDING} with algorithm "LayeredLayouting".
    */
   private static final ElkPadding PADDING_DEFAULT = new ElkPadding(10);
@@ -53,7 +58,7 @@ public class LayeredLayoutingOptions implements ILayoutMetaDataProvider {
   /**
    * Default value for {@link #SPACING_EDGE_NODE} with algorithm "LayeredLayouting".
    */
-  private static final double SPACING_EDGE_NODE_DEFAULT = 10;
+  private static final double SPACING_EDGE_NODE_DEFAULT = 5;
   
   /**
    * Spacing to be preserved between nodes and edges.
@@ -93,7 +98,7 @@ public class LayeredLayoutingOptions implements ILayoutMetaDataProvider {
     registry.register(new LayoutAlgorithmData.Builder()
         .id("layeredLayouting.LayeredLayouting")
         .name("LayeredLayouting")
-        .description("Please insert a short but informative description here")
+        .description("Nice layered algorithm")
         .providerFactory(new LayeredLayoutingFactory())
         .melkBundleName(null)
         .definingBundleId("layeredLayouting")
@@ -103,6 +108,11 @@ public class LayeredLayoutingOptions implements ILayoutMetaDataProvider {
         "layeredLayouting.LayeredLayouting",
         "layeredLayouting.reverseInput",
         REVERSE_INPUT.getDefault()
+    );
+    registry.addOptionSupport(
+        "layeredLayouting.LayeredLayouting",
+        "layeredLayouting.layerSpacing",
+        LAYER_SPACING.getDefault()
     );
     registry.addOptionSupport(
         "layeredLayouting.LayeredLayouting",

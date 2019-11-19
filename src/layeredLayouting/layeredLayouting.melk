@@ -17,13 +17,22 @@ option reverseInput : boolean {
     targets parents
 }
 
+option layerSpacing : int {
+    label "Layer Spacing"
+    description
+        "The spacing between layers."
+    default = 25
+    targets parents
+}
+
 algorithm LayeredLayouting(LayeredLayoutingLayoutProvider) {
     label "LayeredLayouting"
-    description "Please insert a short but informative description here"
+    description "Nice layered algorithm"
     metadataClass options.LayeredLayoutingOptions
     supports reverseInput
+    supports layerSpacing
     supports org.eclipse.elk.padding = new ElkPadding(10)
     supports org.eclipse.elk.spacing.edgeEdge = 5
-    supports org.eclipse.elk.spacing.edgeNode = 10
+    supports org.eclipse.elk.spacing.edgeNode = 5
     supports org.eclipse.elk.spacing.nodeNode = 10
 }

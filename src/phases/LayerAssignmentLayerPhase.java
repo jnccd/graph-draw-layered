@@ -31,6 +31,7 @@ import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.resource.Resource;
 
 import helper.Help;
+import helper.LongEdge;
 import properties.NodeProperty;
 
 public class LayerAssignmentLayerPhase implements LayerPhase {
@@ -67,22 +68,61 @@ public class LayerAssignmentLayerPhase implements LayerPhase {
             layers.get(Help.getProp(n).layer).add(n);
         }
         
-        // add dummy nodes
+        // add dummy nodes - assume we got no hyperedges for once
         var edges = layoutGraph.getContainedEdges();
         for (int e = 0; e < edges.size(); e++) {
-            var edgeLayers = edges.get(e).getSources().stream().map(x -> Help.getProp((ElkNode)x).layer).
-                    collect(Collectors.toList());
-            int minLayer = edgeLayers.stream().min(Integer::compare).get();
-            int maxLayer = edgeLayers.stream().max(Integer::compare).get();
-            if (maxLayer - minLayer > 1) {
+            var start = (ElkNode)edges.get(e).getSources().get(0);
+            var end = (ElkNode)edges.get(e).getTargets().get(0);
+            if (!Help.getProp(end).isDummy && !Help.getProp(start).isDummy && 
+                    Help.getProp(end).layer - Help.getProp(start).layer > 1) {
                 var curEdge = edges.get(e);
                 edges.remove(e);
                 e--;
                 
-                for (int i = minLayer + 1; i <= maxLayer; i++) {
-                    //var dummyNode = new ElkNodeImpl(); // ???
-                    //ElkGraphUtil.createNode(parent)
+                monitor.logGraph(layoutGraph, "Edge " + curEdge.getIdentifier() + " is too long!");
+                
+                List<ElkNode> dummies = new ArrayList<ElkNode>();
+                List<ElkEdge> dummyEdges = new ArrayList<ElkEdge>();
+                for (int i = Help.getProp(start).layer + 1; i < Help.getProp(end).layer; i++) {
+                    var dummyNode = ElkGraphUtil.createNode(layoutGraph);
+                    var toDummy = ElkGraphUtil.createEdge(layoutGraph);
+                    
+                    dummyNode.setWidth(start.getWidth());
+                    dummyNode.setHeight(start.getHeight());
+                    dummyNode.setIdentifier("Dummy");
+                    
+                    if (dummies.size() == 0)
+                        toDummy.getSources().addAll(curEdge.getSources());
+                    else
+                        toDummy.getSources().add(dummies.get(dummies.size() - 1));
+                    toDummy.getTargets().add(dummyNode);
+                    
+                    layers.get(i).add(dummyNode);
+                    Help.getProp(dummyNode).layer = i;
+                    
+                    Help.getProp(dummyNode).isDummy = true;
+                    Help.getProp(toDummy).isDummy = true;
+                    
+                    dummyEdges.add(toDummy);
+                    dummies.add(dummyNode);
+                    
+                    nodes.add(dummyNode);
+                    edges.add(toDummy);
+                    
+                    monitor.logGraph(layoutGraph, "Added dummy");
                 }
+                
+                var fromDumies = ElkGraphUtil.createEdge(layoutGraph);
+                fromDumies.getSources().add(dummies.get(dummies.size() - 1));
+                fromDumies.getTargets().addAll(curEdge.getTargets());
+                Help.getProp(fromDumies).isDummy = true;
+                dummyEdges.add(fromDumies);
+                
+                LongEdge le = new LongEdge();
+                le.dummyEdges = dummyEdges;
+                le.dummyNodes = dummies;
+                le.e = curEdge;
+                Help.getGraphProp(layoutGraph).longEdges.add(le);
             }
         }
     }

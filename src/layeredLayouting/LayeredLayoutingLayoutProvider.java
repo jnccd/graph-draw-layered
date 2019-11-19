@@ -43,6 +43,10 @@ public class LayeredLayoutingLayoutProvider extends AbstractLayoutProvider {
         progressMonitor.begin("LayeredLayouting", phases.length);
         progressMonitor.log("Algorithm began");
         
+        // Set Start Size
+        layoutGraph.setWidth(500);
+        layoutGraph.setWidth(500);
+        
         // Apply all phases
         for (LayerPhase p : phases) {
             // Create a sub monitor
