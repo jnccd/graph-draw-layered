@@ -7,13 +7,17 @@ import java.util.Map;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
+import org.eclipse.elk.core.util.ElkUtil;
 import org.eclipse.elk.core.util.IElkProgressMonitor;
+import org.eclipse.elk.graph.ElkEdge;
 import org.eclipse.elk.graph.ElkGraphElement;
 import org.eclipse.elk.graph.ElkLabel;
 import org.eclipse.elk.graph.ElkNode;
+import org.eclipse.elk.graph.impl.ElkNodeImpl;
 import org.eclipse.elk.graph.properties.IProperty;
 import org.eclipse.elk.graph.properties.IPropertyHolder;
 import org.eclipse.elk.graph.properties.Property;
+import org.eclipse.elk.graph.util.ElkGraphUtil;
 import org.eclipse.emf.common.notify.Adapter;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.util.EList;
@@ -61,6 +65,25 @@ public class LayerAssignmentLayerPhase implements LayerPhase {
                 throw new Exception(n.toString());
             
             layers.get(Help.getProp(n).layer).add(n);
+        }
+        
+        // add dummy nodes
+        var edges = layoutGraph.getContainedEdges();
+        for (int e = 0; e < edges.size(); e++) {
+            var edgeLayers = edges.get(e).getSources().stream().map(x -> Help.getProp((ElkNode)x).layer).
+                    collect(Collectors.toList());
+            int minLayer = edgeLayers.stream().min(Integer::compare).get();
+            int maxLayer = edgeLayers.stream().max(Integer::compare).get();
+            if (maxLayer - minLayer > 1) {
+                var curEdge = edges.get(e);
+                edges.remove(e);
+                e--;
+                
+                for (int i = minLayer + 1; i <= maxLayer; i++) {
+                    //var dummyNode = new ElkNodeImpl(); // ???
+                    //ElkGraphUtil.createNode(parent)
+                }
+            }
         }
     }
     
