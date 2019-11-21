@@ -68,16 +68,35 @@ public class LayerAssignmentLayerPhase implements LayerPhase {
             layers.get(Help.getProp(n).layer).add(n);
         }
         
-        // add dummy nodes - assume we got no hyperedges for once
+        addDummyNodes(layoutGraph, monitor);
+    }
+    
+    public void topoSort(ElkNode layoutGraph, ElkNode src) {
+        for (var e : src.getOutgoingEdges()) {
+            for (var n : e.getTargets()) {
+                if (Help.getProp((ElkNode)n).layer < Help.getProp(src).layer + 1)
+                    Help.getProp((ElkNode)n).layer = Help.getProp(src).layer + 1;
+                
+                topoSort(layoutGraph, (ElkNode)n);
+            }
+        }
+    }
+    
+    public void addDummyNodes(ElkNode layoutGraph, IElkProgressMonitor monitor) {
+        // assume we got no hyperedges for once
+        
+        var layers = Help.getGraphProp(layoutGraph).layers;
         var edges = layoutGraph.getContainedEdges();
+        var nodes = layoutGraph.getChildren();
+        
         for (int e = 0; e < edges.size(); e++) {
             var start = (ElkNode)edges.get(e).getSources().get(0);
             var end = (ElkNode)edges.get(e).getTargets().get(0);
             if (!Help.getProp(end).isDummy && !Help.getProp(start).isDummy && 
                     Help.getProp(end).layer - Help.getProp(start).layer > 1) {
                 var curEdge = edges.get(e);
-                edges.remove(e);
-                e--;
+//                edges.remove(e);
+//                e--;
                 
                 monitor.logGraph(layoutGraph, "Edge " + curEdge.getIdentifier() + " is too long!");
                 
@@ -123,17 +142,8 @@ public class LayerAssignmentLayerPhase implements LayerPhase {
                 le.dummyNodes = dummies;
                 le.e = curEdge;
                 Help.getGraphProp(layoutGraph).longEdges.add(le);
-            }
-        }
-    }
-    
-    public void topoSort(ElkNode layoutGraph, ElkNode src) {
-        for (var e : src.getOutgoingEdges()) {
-            for (var n : e.getTargets()) {
-                if (Help.getProp((ElkNode)n).layer < Help.getProp(src).layer + 1)
-                    Help.getProp((ElkNode)n).layer = Help.getProp(src).layer + 1;
                 
-                topoSort(layoutGraph, (ElkNode)n);
+                Help.getProp(curEdge).parent = le;
             }
         }
     }

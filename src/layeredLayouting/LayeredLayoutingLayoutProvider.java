@@ -44,8 +44,8 @@ public class LayeredLayoutingLayoutProvider extends AbstractLayoutProvider {
         progressMonitor.log("Algorithm began");
         
         // Set Start Size
-        layoutGraph.setWidth(500);
-        layoutGraph.setWidth(500);
+        layoutGraph.setWidth(2000);
+        layoutGraph.setHeight(2000);
         
         // Apply all phases
         for (LayerPhase p : phases) {
@@ -64,19 +64,19 @@ public class LayeredLayoutingLayoutProvider extends AbstractLayoutProvider {
             
             // Close the sub monitor
             monitor.done();
-            progressMonitor.log(p.getClass().getName() + " done!");
+            monitor.logGraph(layoutGraph, p.getClass().getName() + " done!");
         }
         
         // Enforce padding and set the size of the final diagram dynamically
         var nodes = layoutGraph.getChildren();
         var padding = layoutGraph.getProperty(LayeredLayoutingOptions.PADDING);
-        for (var n : layoutGraph.getChildren()) {
-            n.setX(n.getX() + padding.left);
-            n.setY(n.getY() + padding.top);
-        }
-        layoutGraph.setWidth(nodes.stream().map(x -> x.getX()).max(Double::compare).get() + 
+//        for (var n : layoutGraph.getChildren()) {
+//            n.setX(n.getX() + padding.left);
+//            n.setY(n.getY() + padding.top);
+//        }
+        layoutGraph.setWidth(nodes.stream().map(x -> x.getX() + x.getWidth()).max(Double::compare).get() + 
                 padding.left + padding.right);
-        layoutGraph.setWidth(nodes.stream().map(y -> y.getY()).max(Double::compare).get() + 
+        layoutGraph.setHeight(nodes.stream().map(y -> y.getY() + y.getHeight()).max(Double::compare).get() + 
                 padding.top + padding.bottom);
         
         // End the progress monitor
