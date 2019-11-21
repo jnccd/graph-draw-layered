@@ -26,42 +26,43 @@ public class CycleBreakingLayerPhase implements LayerPhase {
         List<Node> sourciest = new ArrayList<Node>();
         List<Node> sinkiest = new ArrayList<Node>();
 
-        while (g.nodes.size() > 0) {
-            var sourcy = g.nodes.stream().filter(x -> x.incoming.size() == 0).findFirst();
-            if (sourcy.isPresent()) {
-                g.removeNode(sourcy.get());
-                sourciest.add(sourcy.get());
-            } else {
-                var sinky = g.nodes.stream().filter(x -> x.outgoing.size() == 0).findFirst();
-                if (sinky.isPresent()) {
-                    g.removeNode(sinky.get());
-                    sinkiest.add(sinky.get());
-                } else {
-                    sourcy = g.nodes.stream().max(
-                            (x, y) -> x.outgoing.size() - x.incoming.size() - 
-                                y.outgoing.size() + y.incoming.size());
-                    
-                    for (var e : sourcy.get().incoming) {
-                        Help.getProp(e.parent).isReversed = true;
-                        reverse(e.parent);
-                        
-                        monitor.logGraph(layoutGraph, "Reversed Edge: " + 
-                            e.parent.getSources().stream().
-                            map(x -> x.getIdentifier()).
-                            reduce((x,y) -> x + "," + y).get() + " -> " + 
-                            e.parent.getTargets().stream().
-                            map(x -> x.getIdentifier()).
-                            reduce((x,y) -> x + "," + y).get());
-                    }
-                    
+        if (hasCycle(layoutGraph))
+            while (g.nodes.size() > 0) {
+                var sourcy = g.nodes.stream().filter(x -> x.incoming.size() == 0).findFirst();
+                if (sourcy.isPresent()) {
                     g.removeNode(sourcy.get());
                     sourciest.add(sourcy.get());
+                } else {
+                    var sinky = g.nodes.stream().filter(x -> x.outgoing.size() == 0).findFirst();
+                    if (sinky.isPresent()) {
+                        g.removeNode(sinky.get());
+                        sinkiest.add(sinky.get());
+                    } else {
+                        sourcy = g.nodes.stream().max(
+                                (x, y) -> x.outgoing.size() - x.incoming.size() - 
+                                    y.outgoing.size() + y.incoming.size());
+                        
+                        for (var e : sourcy.get().incoming) {
+                            Help.getProp(e.parent).isReversed = true;
+                            reverse(e.parent);
+                            
+                            monitor.logGraph(layoutGraph, "Reversed Edge: " + 
+                                e.parent.getSources().stream().
+                                map(x -> x.getIdentifier()).
+                                reduce((x,y) -> x + "," + y).get() + " -> " + 
+                                e.parent.getTargets().stream().
+                                map(x -> x.getIdentifier()).
+                                reduce((x,y) -> x + "," + y).get());
+                        }
+                        
+                        g.removeNode(sourcy.get());
+                        sourciest.add(sourcy.get());
+                    }
                 }
             }
-        }
         
         if (hasCycle(layoutGraph))
-            throw new Exception("wat");
+            System.out.println("Did I miss anything?");
     }
     
     void basic(ElkNode layoutGraph, IElkProgressMonitor monitor) throws Exception {
