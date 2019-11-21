@@ -98,7 +98,18 @@ public class LayerAssignmentLayerPhase implements LayerPhase {
 //                edges.remove(e);
 //                e--;
                 
-                monitor.logGraph(layoutGraph, "Edge " + curEdge.getIdentifier() + " is too long!");
+                monitor.logGraph(layoutGraph, "Edge " + curEdge.getSources().stream().
+                        map(x -> x.getIdentifier()).
+                        reduce((x,y) -> x + "," + y).get() + " -> " + 
+                        curEdge.getTargets().stream().
+                        map(x -> x.getIdentifier()).
+                        reduce((x,y) -> x + "," + y).get() + " is too long!");
+                
+//                // Keep long edges straight - move start and end points to the lowest layerindex
+//                var startLayer = layers.get(Help.getProp(start).layer);
+//                var endLayer = layers.get(Help.getProp(end).layer);
+//                startLayer.remove(start); startLayer.add(0, start);
+//                endLayer.remove(end); endLayer.add(0, end);
                 
                 List<ElkNode> dummies = new ArrayList<ElkNode>();
                 List<ElkEdge> dummyEdges = new ArrayList<ElkEdge>();
@@ -108,7 +119,7 @@ public class LayerAssignmentLayerPhase implements LayerPhase {
                     
                     dummyNode.setWidth(start.getWidth());
                     dummyNode.setHeight(start.getHeight());
-                    dummyNode.setIdentifier("Dummy");
+                    dummyNode.setIdentifier("Dummy_" + start.getIdentifier() + "_" + end.getIdentifier() + "_" + i);
                     
                     if (dummies.size() == 0)
                         toDummy.getSources().addAll(curEdge.getSources());
@@ -116,7 +127,7 @@ public class LayerAssignmentLayerPhase implements LayerPhase {
                         toDummy.getSources().add(dummies.get(dummies.size() - 1));
                     toDummy.getTargets().add(dummyNode);
                     
-                    layers.get(i).add(dummyNode);
+                    layers.get(i).add(0, dummyNode);
                     Help.getProp(dummyNode).layer = i;
                     
                     Help.getProp(dummyNode).isDummy = true;
@@ -128,7 +139,7 @@ public class LayerAssignmentLayerPhase implements LayerPhase {
                     nodes.add(dummyNode);
                     edges.add(toDummy);
                     
-                    monitor.logGraph(layoutGraph, "Added dummy");
+                    monitor.logGraph(layoutGraph, "Added " + dummyNode.getIdentifier());
                 }
                 
                 var fromDumies = ElkGraphUtil.createEdge(layoutGraph);

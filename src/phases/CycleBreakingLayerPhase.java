@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.eclipse.elk.core.util.IElkProgressMonitor;
 import org.eclipse.elk.graph.ElkConnectableShape;
+import org.eclipse.elk.graph.ElkEdge;
 import org.eclipse.elk.graph.ElkNode;
 import org.eclipse.elk.graph.impl.ElkNodeImpl;
 
@@ -40,8 +41,18 @@ public class CycleBreakingLayerPhase implements LayerPhase {
                             (x, y) -> x.outgoing.size() - x.incoming.size() - 
                                 y.outgoing.size() + y.incoming.size());
                     
-                    for (var e : sourcy.get().incoming)
+                    for (var e : sourcy.get().incoming) {
                         Help.getProp(e.parent).isReversed = true;
+                        reverse(e.parent);
+                        
+                        monitor.logGraph(layoutGraph, "Reversed Edge: " + 
+                            e.parent.getSources().stream().
+                            map(x -> x.getIdentifier()).
+                            reduce((x,y) -> x + "," + y).get() + " -> " + 
+                            e.parent.getTargets().stream().
+                            map(x -> x.getIdentifier()).
+                            reduce((x,y) -> x + "," + y).get());
+                    }
                     
                     g.removeNode(sourcy.get());
                     sourciest.add(sourcy.get());
@@ -49,24 +60,11 @@ public class CycleBreakingLayerPhase implements LayerPhase {
             }
         }
         
-        for (var e : layoutGraph.getContainedEdges()) 
-            if (Help.getProp(e).isReversed) {
-                List<ElkConnectableShape> srcs = new ArrayList<ElkConnectableShape>();
-                for (var s : e.getSources())
-                    srcs.add(s);
-                e.getSources().clear();
-                
-                e.getSources().addAll(e.getTargets());
-                e.getTargets().clear();
-                
-                e.getTargets().addAll(srcs);
-            }
-        
         if (hasCycle(layoutGraph))
             throw new Exception("wat");
     }
     
-    public void basic(ElkNode layoutGraph, IElkProgressMonitor monitor) throws Exception {
+    void basic(ElkNode layoutGraph, IElkProgressMonitor monitor) throws Exception {
         if (hasCycle(layoutGraph))
             throw new Exception("CYCLES!!!! AHHHHHHHHHHHHHHHHHHHH");
     }
@@ -95,5 +93,17 @@ public class CycleBreakingLayerPhase implements LayerPhase {
         Help.getProp(sourceNode).visiting = false;
         Help.getProp(sourceNode).visited = true;
         return false;
+    }
+    
+    void reverse(ElkEdge e) {
+        List<ElkConnectableShape> srcs = new ArrayList<ElkConnectableShape>();
+        for (var s : e.getSources())
+            srcs.add(s);
+        e.getSources().clear();
+        
+        e.getSources().addAll(e.getTargets());
+        e.getTargets().clear();
+        
+        e.getTargets().addAll(srcs);
     }
 }

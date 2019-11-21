@@ -26,7 +26,7 @@ public class LayeredLayoutingMetadataProvider implements ILayoutMetaDataProvider
   /**
    * Default value for {@link #LAYER_SPACING}.
    */
-  private static final int LAYER_SPACING_DEFAULT = 25;
+  private static final int LAYER_SPACING_DEFAULT = 45;
   
   /**
    * The spacing between layers.

@@ -21,7 +21,7 @@ option layerSpacing : int {
     label "Layer Spacing"
     description
         "The spacing between layers."
-    default = 25
+    default = 45
     targets parents
 }
 

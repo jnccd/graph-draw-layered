@@ -1,6 +1,7 @@
 package phases;
 
 import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 import org.eclipse.elk.core.util.IElkProgressMonitor;
 import org.eclipse.elk.graph.ElkNode;
@@ -32,6 +33,8 @@ public class NodePlacementLayerPhase implements LayerPhase {
                 n.setY(curY);
                 
                 curY += n.getHeight() + nodeNodeSpacing;
+                
+                monitor.logGraph(layoutGraph, "Placed " + n.getIdentifier());
             }
             curX += stackWidth + nodeNodeSpacing + layerSpacing;
         }

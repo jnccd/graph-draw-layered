@@ -38,11 +38,13 @@ public class CrossingMinimizationLayerPhase implements LayerPhase {
                 
                 Help.getProp(n).barycenterVal = s.stream().map(x -> layers.get(fl - 1).indexOf(x)).
                         reduce(0, (a, b) -> a + b) / (double)s.size();
+                
+                monitor.logGraph(layoutGraph, "Node " + n.getIdentifier() + " from layer " + l + 
+                        " gets a barycenter Value of " + Help.getProp(n).barycenterVal);
             }
-        }
-        
-        for (ArrayList<ElkNode> l : layers) {
-            l.sort((x, y) -> Double.compare(Help.getProp(x).barycenterVal, Help.getProp(y).barycenterVal));
+            
+            curLay.sort((x, y) -> Double.compare(Help.getProp(x).barycenterVal, Help.getProp(y).barycenterVal));
+            monitor.logGraph(layoutGraph, "----------------------------------------------------------------------");
         }
     }
 }

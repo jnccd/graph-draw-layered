@@ -22,7 +22,8 @@ public class EdgeRoutingLayerPhase implements LayerPhase {
         
         var dummies = Help.getGraphProp(layoutGraph).longEdges;
         
-        for (ElkEdge edge : layoutGraph.getContainedEdges()) {
+        for (ElkEdge edge : layoutGraph.getContainedEdges().stream().filter(x -> !Help.getProp(x).isDummy).
+                collect(Collectors.toList())) {
             ElkNode source = ElkGraphUtil.connectableShapeToNode(edge.getSources().get(0));
             ElkNode target = ElkGraphUtil.connectableShapeToNode(edge.getTargets().get(0));
             
