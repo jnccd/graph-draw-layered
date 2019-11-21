@@ -19,7 +19,7 @@ public class CycleBreakingLayerPhase implements LayerPhase {
     public void apply(ElkNode layoutGraph, IElkProgressMonitor monitor) throws Exception {
         advanced(layoutGraph, monitor); // TODO: Add advanced
     }
-     
+    
     public void advanced(ElkNode layoutGraph, IElkProgressMonitor monitor) throws Exception {
         
         Graph g = Graph.fromElk(layoutGraph);
