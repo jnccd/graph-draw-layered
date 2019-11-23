@@ -67,13 +67,9 @@ public class LayeredLayoutingLayoutProvider extends AbstractLayoutProvider {
             monitor.logGraph(layoutGraph, p.getClass().getName() + " done!");
         }
         
-        // Enforce padding and set the size of the final diagram dynamically
+        // Set the size of the final diagram dynamically
         var nodes = layoutGraph.getChildren();
         var padding = layoutGraph.getProperty(LayeredLayoutingOptions.PADDING);
-//        for (var n : layoutGraph.getChildren()) {
-//            n.setX(n.getX() + padding.left);
-//            n.setY(n.getY() + padding.top);
-//        }
         layoutGraph.setWidth(nodes.stream().map(x -> x.getX() + x.getWidth()).max(Double::compare).get() + 
                 padding.left + padding.right);
         layoutGraph.setHeight(nodes.stream().map(y -> y.getY() + y.getHeight()).max(Double::compare).get() + 

@@ -95,21 +95,13 @@ public class LayerAssignmentLayerPhase implements LayerPhase {
             if (!Help.getProp(end).isDummy && !Help.getProp(start).isDummy && 
                     Help.getProp(end).layer - Help.getProp(start).layer > 1) {
                 var curEdge = edges.get(e);
-//                edges.remove(e);
-//                e--;
-                
+
                 monitor.logGraph(layoutGraph, "Edge " + curEdge.getSources().stream().
                         map(x -> x.getIdentifier()).
                         reduce((x,y) -> x + "," + y).get() + " -> " + 
                         curEdge.getTargets().stream().
                         map(x -> x.getIdentifier()).
                         reduce((x,y) -> x + "," + y).get() + " is too long!");
-                
-//                // Keep long edges straight - move start and end points to the lowest layerindex
-//                var startLayer = layers.get(Help.getProp(start).layer);
-//                var endLayer = layers.get(Help.getProp(end).layer);
-//                startLayer.remove(start); startLayer.add(0, start);
-//                endLayer.remove(end); endLayer.add(0, end);
                 
                 List<ElkNode> dummies = new ArrayList<ElkNode>();
                 List<ElkEdge> dummyEdges = new ArrayList<ElkEdge>();
