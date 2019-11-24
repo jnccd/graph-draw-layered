@@ -40,7 +40,9 @@ public class LayerAssignmentLayerPhase implements LayerPhase {
     public void apply(ElkNode layoutGraph, IElkProgressMonitor monitor) throws Exception {
         basic(layoutGraph, monitor);
     }
-    
+    /*  - start from source, set layer 0, increase layer for target node. traverse until sink by increasing layer .
+        - dummy nodes and dummy edges used to break long edge
+    */
     public void basic(ElkNode layoutGraph, IElkProgressMonitor monitor) throws Exception {
         var nodes = layoutGraph.getChildren();
         
@@ -71,6 +73,7 @@ public class LayerAssignmentLayerPhase implements LayerPhase {
         addDummyNodes(layoutGraph, monitor);
     }
     
+    /* increase layer by 1 from source to target, for each edges of source */
     public void topoSort(ElkNode layoutGraph, ElkNode src) {
         for (var e : src.getOutgoingEdges()) {
             for (var n : e.getTargets()) {
@@ -103,6 +106,8 @@ public class LayerAssignmentLayerPhase implements LayerPhase {
                         map(x -> x.getIdentifier()).
                         reduce((x,y) -> x + "," + y).get() + " is too long!");
                 
+                // add dummy nodes and edges to break long edge 
+                // set layer for dummy node, update sink node layer
                 List<ElkNode> dummies = new ArrayList<ElkNode>();
                 List<ElkEdge> dummyEdges = new ArrayList<ElkEdge>();
                 for (int i = Help.getProp(start).layer + 1; i < Help.getProp(end).layer; i++) {
