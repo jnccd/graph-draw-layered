@@ -19,6 +19,11 @@ public class CrossingMinimizationLayerPhase implements LayerPhase {
         basic(layoutGraph, monitor);
     }
     
+    /* Barycenter Heuristic --
+       - consider layer 0 is fixed layer
+       - calculate barycenter value for free layer
+       - sort nodes by barycenter values of each layer
+    */
     public void basic(ElkNode layoutGraph, IElkProgressMonitor monitor) { 
         var nodes = layoutGraph.getChildren();
         var layers = Help.getGraphProp(layoutGraph).layers;
