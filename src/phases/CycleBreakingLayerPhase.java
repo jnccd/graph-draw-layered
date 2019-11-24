@@ -18,8 +18,12 @@ public class CycleBreakingLayerPhase implements LayerPhase {
     @Override
     public void apply(ElkNode layoutGraph, IElkProgressMonitor monitor) throws Exception {
         advanced(layoutGraph, monitor); // TODO: Add advanced
-    }
-    
+    } 
+    /*cycle breaking algorithm --
+        source node store in source list
+        sink node store in sink list
+        others: reverse edge ,store in source list
+    */
     public void advanced(ElkNode layoutGraph, IElkProgressMonitor monitor) throws Exception {
         
         Graph g = Graph.fromElk(layoutGraph);
@@ -29,17 +33,16 @@ public class CycleBreakingLayerPhase implements LayerPhase {
         if (hasCycle(layoutGraph))
             //graph has cycle
             while (g.nodes.size() > 0) {
-                var sourcy = g.nodes.stream().filter(x -> x.incoming.size() == 0).findFirst(); //source
+                var sourcy = g.nodes.stream().filter(x -> x.incoming.size() == 0).findFirst(); 
                 if (sourcy.isPresent()) {
-                    g.removeNode(sourcy.get()); //remove source from graph
+                    g.removeNode(sourcy.get()); 
                     sourciest.add(sourcy.get());
                 } else {
-                    var sinky = g.nodes.stream().filter(x -> x.outgoing.size() == 0).findFirst(); //sink
+                    var sinky = g.nodes.stream().filter(x -> x.outgoing.size() == 0).findFirst(); 
                     if (sinky.isPresent()) {
-                        g.removeNode(sinky.get()); //remove sink from graph
+                        g.removeNode(sinky.get());
                         sinkiest.add(sinky.get());
-                    } else {
-                        //others node except source and sink,reverse  edges        
+                    } else {       
                         sourcy = g.nodes.stream().max(
                                 (x, y) -> x.outgoing.size() - x.incoming.size() - 
                                     y.outgoing.size() + y.incoming.size());
@@ -63,8 +66,7 @@ public class CycleBreakingLayerPhase implements LayerPhase {
                 }
             }
         
-        if (hasCycle(layoutGraph))
-            // check still graph contain any cycle
+        if (hasCycle(layoutGraph)) 
             System.out.println("Did I miss anything?");
     }
     
