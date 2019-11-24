@@ -27,17 +27,19 @@ public class CycleBreakingLayerPhase implements LayerPhase {
         List<Node> sinkiest = new ArrayList<Node>();
 
         if (hasCycle(layoutGraph))
+            //graph has cycle
             while (g.nodes.size() > 0) {
-                var sourcy = g.nodes.stream().filter(x -> x.incoming.size() == 0).findFirst();
+                var sourcy = g.nodes.stream().filter(x -> x.incoming.size() == 0).findFirst(); //source
                 if (sourcy.isPresent()) {
-                    g.removeNode(sourcy.get());
+                    g.removeNode(sourcy.get()); //remove source from graph
                     sourciest.add(sourcy.get());
                 } else {
-                    var sinky = g.nodes.stream().filter(x -> x.outgoing.size() == 0).findFirst();
+                    var sinky = g.nodes.stream().filter(x -> x.outgoing.size() == 0).findFirst(); //sink
                     if (sinky.isPresent()) {
-                        g.removeNode(sinky.get());
+                        g.removeNode(sinky.get()); //remove sink from graph
                         sinkiest.add(sinky.get());
                     } else {
+                        //others node except source and sink,reverse  edges        
                         sourcy = g.nodes.stream().max(
                                 (x, y) -> x.outgoing.size() - x.incoming.size() - 
                                     y.outgoing.size() + y.incoming.size());
@@ -62,6 +64,7 @@ public class CycleBreakingLayerPhase implements LayerPhase {
             }
         
         if (hasCycle(layoutGraph))
+            // check still graph contain any cycle
             System.out.println("Did I miss anything?");
     }
     
@@ -69,7 +72,8 @@ public class CycleBreakingLayerPhase implements LayerPhase {
         if (hasCycle(layoutGraph))
             throw new Exception("CYCLES!!!! AHHHHHHHHHHHHHHHHHHHH");
     }
-
+   
+    //check graph contain any cycle
     boolean hasCycle(ElkNode layoutGraph) {
         for (var node : layoutGraph.getChildren()) {
             if (!Help.getProp(node).visiting && hasCycle(layoutGraph, node)) {
@@ -79,6 +83,7 @@ public class CycleBreakingLayerPhase implements LayerPhase {
         return false;
     }
     
+    //graph traversal from sourceNode to find a cycle
     boolean hasCycle(ElkNode layoutGraph, ElkNode sourceNode) {
         Help.getProp(sourceNode).visiting = true;
 
@@ -96,6 +101,7 @@ public class CycleBreakingLayerPhase implements LayerPhase {
         return false;
     }
     
+    //reverse edge's source and target position
     void reverse(ElkEdge e) {
         List<ElkConnectableShape> srcs = new ArrayList<ElkConnectableShape>();
         for (var s : e.getSources())
