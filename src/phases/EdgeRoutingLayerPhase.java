@@ -16,6 +16,10 @@ public class EdgeRoutingLayerPhase implements LayerPhase {
 
     @Override
     public void apply(ElkNode layoutGraph, IElkProgressMonitor monitor) {
+        /* 
+            - set edges between nodes 
+            - set edges in dummy nodes respected long edge, 
+        */
         double nodeNodeSpacing = layoutGraph.getProperty(LayeredLayoutingOptions.SPACING_NODE_NODE);
         double edgeNodeSpacing = layoutGraph.getProperty(LayeredLayoutingOptions.SPACING_EDGE_NODE);
         double layerSpacing = layoutGraph.getProperty(LayeredLayoutingOptions.LAYER_SPACING);
